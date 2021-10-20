@@ -113,6 +113,7 @@ class helloHandler(BaseHTTPRequestHandler):
 class proxyHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         
+        #get path of the request
         parsed_path = self.path
         url = "http://" + os.environ.get('FORWARDING_ADDRESS') + parsed_path # from your code above
 
@@ -122,10 +123,12 @@ class proxyHandler(BaseHTTPRequestHandler):
         # print("\n url is: ")
         # print(url)
 
+        # test if server is up
         host = str(os.environ.get('FORWARDING_ADDRESS')).split(":")
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         result = sock.connect_ex((host[0],int(host[1])))
 
+        # if it is up, forward it
         if result == 0:
             sock.close()
             response = requests.get(url, timeout=2.50)
@@ -137,11 +140,11 @@ class proxyHandler(BaseHTTPRequestHandler):
             jsndict = response.json()
             jsnrtrn = json.dumps(jsndict)
             self.wfile.write(jsnrtrn.encode("utf8"))
-        else:
+        else: # otherwise return 503
             self.send_response(503)
             self.send_header("Content-type", "application/json")
             self.end_headers()
-            jsndict = {"error": "Server Down"}
+            jsndict = {"error": "Cannot forward request"}
             jsnrtrn = json.dumps(jsndict)
             self.wfile.write(jsnrtrn.encode("utf8"))
 
@@ -151,14 +154,14 @@ class proxyHandler(BaseHTTPRequestHandler):
 
     def do_PUT(self):
         
+        #get path of the request
         parsed_path = self.path
+        url = "http://" + os.environ.get('FORWARDING_ADDRESS') + parsed_path 
 
         #get the json body
         content_len = int(self.headers.get('content-length'))
         body = self.rfile.read(content_len)
         data = json.loads(body)
-
-        url = "http://" + os.environ.get('FORWARDING_ADDRESS') + parsed_path # from your code above
 
         
         
@@ -167,10 +170,12 @@ class proxyHandler(BaseHTTPRequestHandler):
         # print("\n url is: ")
         # print(url)
 
+        # test is server up
         host = str(os.environ.get('FORWARDING_ADDRESS')).split(":")
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         result = sock.connect_ex((host[0],int(host[1])))
 
+        # if up, forward
         if result == 0:
             sock.close()
             response = requests.put(url, json = data, timeout=2.50)
@@ -182,17 +187,18 @@ class proxyHandler(BaseHTTPRequestHandler):
             jsndict = response.json()
             jsnrtrn = json.dumps(jsndict)
             self.wfile.write(jsnrtrn.encode("utf8"))
-        else:
+        else: # else return 503
             self.send_response(503)
             self.send_header("Content-type", "application/json")
             self.end_headers()
-            jsndict = {"error": "Server Down"}
+            jsndict = {"error": "Cannot forward request"}
             jsnrtrn = json.dumps(jsndict)
             self.wfile.write(jsnrtrn.encode("utf8"))
         
 
     def do_DELETE(self):
         
+        # get path of request
         parsed_path = self.path
         url = "http://" + os.environ.get('FORWARDING_ADDRESS') + parsed_path # from your code above
 
@@ -201,10 +207,12 @@ class proxyHandler(BaseHTTPRequestHandler):
         # print("\n url is: ")
         # print(url)
 
+        # test is server up
         host = str(os.environ.get('FORWARDING_ADDRESS')).split(":")
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         result = sock.connect_ex((host[0],int(host[1])))
 
+        # if up forward it
         if result == 0:
             sock.close()
             response = requests.delete(url, timeout=2.50)
@@ -216,11 +224,11 @@ class proxyHandler(BaseHTTPRequestHandler):
             jsndict = response.json()
             jsnrtrn = json.dumps(jsndict)
             self.wfile.write(jsnrtrn.encode("utf8"))
-        else:
+        else: # else return 503
             self.send_response(503)
             self.send_header("Content-type", "application/json")
             self.end_headers()
-            jsndict = {"error": "Server Down"}
+            jsndict = {"error": "Cannot forward request"}
             jsnrtrn = json.dumps(jsndict)
             self.wfile.write(jsnrtrn.encode("utf8"))
 
@@ -240,7 +248,7 @@ def main():
         
         server.serve_forever()
     else:
-        PORT = 8080
+        PORT = 8090
         server = HTTPServer(('', PORT), proxyHandler)
         
         print('Proxy running on port %s' % PORT)
