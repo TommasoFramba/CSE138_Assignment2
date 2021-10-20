@@ -12,6 +12,7 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse
 import os.path
 import json
+import requests
 from html.parser import HTMLParser
 
 #handle requests
@@ -107,13 +108,95 @@ class helloHandler(BaseHTTPRequestHandler):
                     jsnrtrn = json.dumps(jsndict)
                     self.wfile.write(jsnrtrn.encode("utf8"))
 
+class proxyHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        
+        parsed_path = self.path
+        url = "http://" + os.environ.get('FORWARDING_ADDRESS') + parsed_path # from your code above
+
+        print("\nparsed_path is: ")
+        print(parsed_path)
+        print("\n url is: ")
+        print(url)
+
+        response = requests.get(url, timeout=2.50)
+        print("\nresponse is: ")
+        print(response)
+        self.send_response(response.status_code)
+        self.send_header("Content-type", "application/json")
+        self.end_headers()
+        jsndict = response.json()
+        jsnrtrn = json.dumps(jsndict)
+        self.wfile.write(jsnrtrn.encode("utf8"))
+
+    def do_PUT(self):
+        
+        parsed_path = self.path
+
+        #get the json body
+        content_len = int(self.headers.get('content-length'))
+        body = self.rfile.read(content_len)
+        data = json.loads(body)
+
+        url = "http://" + os.environ.get('FORWARDING_ADDRESS') + parsed_path # from your code above
+
+        print("\nparsed_path is: ")
+        print(parsed_path)
+        print("\n url is: ")
+        print(url)
+
+        response = requests.put(url, json = data, timeout=2.50)
+        print("\nresponse is: ")
+        print(response)
+        self.send_response(response.status_code)
+        self.send_header("Content-type", "application/json")
+        self.end_headers()
+        jsndict = response.json()
+        jsnrtrn = json.dumps(jsndict)
+        self.wfile.write(jsnrtrn.encode("utf8"))
+
+    def do_DELETE(self):
+        
+        parsed_path = self.path
+        url = "http://" + os.environ.get('FORWARDING_ADDRESS') + parsed_path # from your code above
+
+        print("\nparsed_path is: ")
+        print(parsed_path)
+        print("\n url is: ")
+        print(url)
+
+        response = requests.delete(url, timeout=2.50)
+        print("\nresponse is: ")
+        print(response)
+        self.send_response(response.status_code)
+        self.send_header("Content-type", "application/json")
+        self.end_headers()
+        jsndict = response.json()
+        jsnrtrn = json.dumps(jsndict)
+        self.wfile.write(jsnrtrn.encode("utf8"))
+
+
+    
+    
+
+    
 
 #start and run server on port 8090
 def main():
-    PORT = 8090
-    server = HTTPServer(('', PORT), helloHandler)
-    print('Server running on port %s' % PORT)
-    server.serve_forever()
+    if os.environ.get('FORWARDING_ADDRESS') == None:
+        PORT = 8090
+        server = HTTPServer(('', PORT), helloHandler)
+        
+        print('Server running on port %s' % PORT)
+        
+        server.serve_forever()
+    else:
+        PORT = 8080
+        server = HTTPServer(('', PORT), proxyHandler)
+        
+        print('Proxy running on port %s' % PORT)
+        
+        server.serve_forever()
 
 
 if __name__ == '__main__':
