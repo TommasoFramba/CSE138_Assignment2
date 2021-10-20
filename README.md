@@ -4,9 +4,7 @@ Tommaso Framba: Part 1 Single-Site Key-value Store implementation and passing of
 
 Eric Yao Huang: Part 2 Key-value Store with proxies implementation and passing of all part 2 test script tests. Created dockerfile for assignment 2.
 
-Acknowledgements:
-
-N/A
+Acknowledgements: N/A
 
 Citations:
 
