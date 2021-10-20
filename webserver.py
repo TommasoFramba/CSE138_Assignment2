@@ -119,15 +119,27 @@ class proxyHandler(BaseHTTPRequestHandler):
         print("\n url is: ")
         print(url)
 
-        response = requests.get(url, timeout=2.50)
-        print("\nresponse is: ")
-        print(response)
-        self.send_response(response.status_code)
-        self.send_header("Content-type", "application/json")
-        self.end_headers()
-        jsndict = response.json()
-        jsnrtrn = json.dumps(jsndict)
-        self.wfile.write(jsnrtrn.encode("utf8"))
+        try:
+            response = requests.get(url, timeout=2.50)
+            print("\nresponse is: ")
+            print(response)
+            self.send_response(response.status_code)
+            self.send_header("Content-type", "application/json")
+            self.end_headers()
+            jsndict = response.json()
+            jsnrtrn = json.dumps(jsndict)
+            self.wfile.write(jsnrtrn.encode("utf8"))
+
+        except ConnectionRefusedError as e:    # This is the correct syntax
+            #print(e)
+            self.send_response(503)
+            self.send_header("Content-type", "application/json")
+            self.end_headers()
+            jsndict = {"error": "Server Down"}
+            jsnrtrn = json.dumps(jsndict)
+            self.wfile.write(jsnrtrn.encode("utf8"))
+
+        
 
     def do_PUT(self):
         
