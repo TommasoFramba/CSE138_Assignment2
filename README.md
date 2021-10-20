@@ -5,6 +5,5 @@ Eric Yao Huang: Part 2 Key-value Store with proxies implementation and passing o
 ### Acknowledgements: 
 N/A
 ### Citations:
-\
 https://docs.python.org/3/library/http.server.html
 \This citation was used in order to reference what parts of the httpserver library was needed in order to implement proper handling of responses to GET and PUT and DELETE requests.
