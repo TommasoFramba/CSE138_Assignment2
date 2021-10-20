@@ -24,6 +24,7 @@ class helloHandler(BaseHTTPRequestHandler):
     #handle get requests
     def do_GET(self):
         parsed_path = urlparse(self.path).path.split("/")
+        if len(parsed_path) == 2 and parsed_path[1] == 'kvs': parsed_path.append("") #Handle as if it was empty string
         if len(parsed_path) == 3:
             if parsed_path[1] == 'kvs':
 
@@ -46,6 +47,7 @@ class helloHandler(BaseHTTPRequestHandler):
     #handle post requests
     def do_PUT(self):
         parsed_path = urlparse(self.path).path.split("/")
+        if len(parsed_path) == 2 and parsed_path[1] == 'kvs': parsed_path.append("") #Handle as if it was empty string
         if len(parsed_path) == 3:
             if parsed_path[1] == 'kvs':
 
@@ -92,6 +94,7 @@ class helloHandler(BaseHTTPRequestHandler):
 
     def do_DELETE(self):
         parsed_path = urlparse(self.path).path.split("/")
+        if len(parsed_path) == 2 and parsed_path[1] == 'kvs': parsed_path.append("") #Handle as if it was empty string
         if len(parsed_path) == 3:
             if parsed_path[1] == 'kvs':
                 if parsed_path[2] in self.keyValueStore:
