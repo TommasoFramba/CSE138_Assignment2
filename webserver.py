@@ -13,6 +13,8 @@ from urllib.parse import urlparse
 import os.path
 import json
 import requests
+import socket
+import subprocess
 from html.parser import HTMLParser
 
 #handle requests
@@ -114,12 +116,18 @@ class proxyHandler(BaseHTTPRequestHandler):
         parsed_path = self.path
         url = "http://" + os.environ.get('FORWARDING_ADDRESS') + parsed_path # from your code above
 
-        print("\nparsed_path is: ")
-        print(parsed_path)
-        print("\n url is: ")
-        print(url)
+        
+        # print("\nparsed_path is: ")
+        # print(parsed_path)
+        # print("\n url is: ")
+        # print(url)
 
-        try:
+        host = str(os.environ.get('FORWARDING_ADDRESS')).split(":")
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        result = sock.connect_ex((host[0],int(host[1])))
+
+        if result == 0:
+            sock.close()
             response = requests.get(url, timeout=2.50)
             print("\nresponse is: ")
             print(response)
@@ -129,15 +137,15 @@ class proxyHandler(BaseHTTPRequestHandler):
             jsndict = response.json()
             jsnrtrn = json.dumps(jsndict)
             self.wfile.write(jsnrtrn.encode("utf8"))
-
-        except ConnectionRefusedError as e:    # This is the correct syntax
-            #print(e)
+        else:
             self.send_response(503)
             self.send_header("Content-type", "application/json")
             self.end_headers()
             jsndict = {"error": "Server Down"}
             jsnrtrn = json.dumps(jsndict)
             self.wfile.write(jsnrtrn.encode("utf8"))
+
+        
 
         
 
@@ -152,40 +160,69 @@ class proxyHandler(BaseHTTPRequestHandler):
 
         url = "http://" + os.environ.get('FORWARDING_ADDRESS') + parsed_path # from your code above
 
-        print("\nparsed_path is: ")
-        print(parsed_path)
-        print("\n url is: ")
-        print(url)
+        
+        
+        # print("\nparsed_path is: ")
+        # print(parsed_path)
+        # print("\n url is: ")
+        # print(url)
 
-        response = requests.put(url, json = data, timeout=2.50)
-        print("\nresponse is: ")
-        print(response)
-        self.send_response(response.status_code)
-        self.send_header("Content-type", "application/json")
-        self.end_headers()
-        jsndict = response.json()
-        jsnrtrn = json.dumps(jsndict)
-        self.wfile.write(jsnrtrn.encode("utf8"))
+        host = str(os.environ.get('FORWARDING_ADDRESS')).split(":")
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        result = sock.connect_ex((host[0],int(host[1])))
+
+        if result == 0:
+            sock.close()
+            response = requests.put(url, json = data, timeout=2.50)
+            print("\nresponse is: ")
+            print(response)
+            self.send_response(response.status_code)
+            self.send_header("Content-type", "application/json")
+            self.end_headers()
+            jsndict = response.json()
+            jsnrtrn = json.dumps(jsndict)
+            self.wfile.write(jsnrtrn.encode("utf8"))
+        else:
+            self.send_response(503)
+            self.send_header("Content-type", "application/json")
+            self.end_headers()
+            jsndict = {"error": "Server Down"}
+            jsnrtrn = json.dumps(jsndict)
+            self.wfile.write(jsnrtrn.encode("utf8"))
+        
 
     def do_DELETE(self):
         
         parsed_path = self.path
         url = "http://" + os.environ.get('FORWARDING_ADDRESS') + parsed_path # from your code above
 
-        print("\nparsed_path is: ")
-        print(parsed_path)
-        print("\n url is: ")
-        print(url)
+        # print("\nparsed_path is: ")
+        # print(parsed_path)
+        # print("\n url is: ")
+        # print(url)
 
-        response = requests.delete(url, timeout=2.50)
-        print("\nresponse is: ")
-        print(response)
-        self.send_response(response.status_code)
-        self.send_header("Content-type", "application/json")
-        self.end_headers()
-        jsndict = response.json()
-        jsnrtrn = json.dumps(jsndict)
-        self.wfile.write(jsnrtrn.encode("utf8"))
+        host = str(os.environ.get('FORWARDING_ADDRESS')).split(":")
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        result = sock.connect_ex((host[0],int(host[1])))
+
+        if result == 0:
+            sock.close()
+            response = requests.delete(url, timeout=2.50)
+            print("\nresponse is: ")
+            print(response)
+            self.send_response(response.status_code)
+            self.send_header("Content-type", "application/json")
+            self.end_headers()
+            jsndict = response.json()
+            jsnrtrn = json.dumps(jsndict)
+            self.wfile.write(jsnrtrn.encode("utf8"))
+        else:
+            self.send_response(503)
+            self.send_header("Content-type", "application/json")
+            self.end_headers()
+            jsndict = {"error": "Server Down"}
+            jsnrtrn = json.dumps(jsndict)
+            self.wfile.write(jsnrtrn.encode("utf8"))
 
 
     
