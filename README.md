@@ -1,10 +1,10 @@
 ### Team Contributions:
-Tommaso Framba: Part 1 Single-Site Key-value Store implementation and passing of all part 1 test script tests. 
-
-Eric Yao Huang: Part 2 Key-value Store with proxies implementation and passing of all part 2 test script tests. Created dockerfile for assignment 2.
+Tommaso Framba: 
+Part 1 Single-Site Key-value Store implementation and passing of all part 1 test script tests. 
+Part 2 Key-value Store with proxies implementation and passing of all part 2 test script tests. Created dockerfile for assignment 2.
 
 ### Acknowledgements: 
-Eric would like to acknowledge TA Patrick Redmond for providing the program pseudocode during section that provided the basic structure for completing part 2.
+Tommaso would like to acknowledge TA Patrick Redmond for providing the program pseudocode during section that provided the basic structure for completing part 2.
 
 ### Citations:
 Python HTTP Server Documentation
